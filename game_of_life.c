@@ -6,10 +6,10 @@
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_ttf.h>
 
-#define WIDTH 640
-#define HEIGHT 480
+#define WIDTH 200
+#define HEIGHT 200
 
-#define FPS 1
+#define FPS 10
 #define FRAME_DELAY 1000/FPS
 
 void update_state(int *state);
@@ -60,6 +60,10 @@ int main(int argc, char *argv[])
 	state = (int*)malloc(size * sizeof(*state));
 	// Stop condition flag
 	int condition = 0;
+	// Create lifeforms!
+	create_glider(state, 10,10);
+	create_glider(state, 20,20);
+	create_glider(state, 30,30);
 	while(!condition)
 	{
 		// Start fps timer
@@ -186,6 +190,10 @@ int check_neighbors(int *state, int x, int y)
 
 void create_glider(int *state, int x, int y)
 {
-	*(state + ((y)*WIDTH)+x) = 1;
+	*(state + ((y)*WIDTH)+(x+1)) = 1;
+	*(state + ((y+1)*WIDTH)+(x+2)) = 1;
+	*(state + ((y+2)*WIDTH)+(x+1)) = 1;
+	*(state + ((y+2)*WIDTH)+(x)) = 1;
+	*(state + ((y+2)*WIDTH)+(x+2)) = 1;
 	
 }
