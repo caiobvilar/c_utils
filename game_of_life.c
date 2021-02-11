@@ -49,6 +49,17 @@ int main(int argc, char *argv[])
 	create_glider(generation, 1+HEIGHT/2,WIDTH/2);
 	create_glider(generation, 2+HEIGHT/2,WIDTH/2);
 	create_glider(generation, 3+HEIGHT/2,WIDTH/2);
+	create_glider(generation, 4+HEIGHT/2,WIDTH/2);
+	create_glider(generation, 5+HEIGHT/2,WIDTH/2);
+	create_glider(generation, 6+HEIGHT/2,WIDTH/2);
+	create_glider(generation, 7+HEIGHT/2,WIDTH/2);
+	create_glider(generation, 8+HEIGHT/2,WIDTH/2);
+	create_glider(generation, 9+HEIGHT/2,WIDTH/2);
+	create_glider(generation, 10+HEIGHT/2,WIDTH/2);
+	create_glider(generation, 11+HEIGHT/2,WIDTH/2);
+	create_glider(generation, 12+HEIGHT/2,WIDTH/2);
+	create_glider(generation, 13+HEIGHT/2,WIDTH/2);
+	create_glider(generation, 14+HEIGHT/2,WIDTH/2);
 	create_glider(generation, 1+HEIGHT/2,WIDTH/2+1);
 	create_glider(generation, 1+HEIGHT/2,WIDTH/2+2);
 	create_glider(generation, 1+HEIGHT/2,WIDTH/2+3);
