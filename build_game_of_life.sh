@@ -1,1 +1,1 @@
-gcc game_of_life.c -o game_of_life -lSDL2
+gcc game_of_life.c gameoflife.c -o game_of_life -lSDL2

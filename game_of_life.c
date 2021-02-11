@@ -1,30 +1,21 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <unistd.h>
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
-#include <SDL2/SDL_ttf.h>
-
-#define WIDTH 200
-#define HEIGHT 200
-
-#define FPS 10
-#define FRAME_DELAY 1000/FPS
-
-void update_state(int *state);
-void render_state(int *state, SDL_Renderer *renderer);
-int check_neighbors(int *state, int x, int y);
-void create_glider(int *state, int x, int y);
+#include "game_of_life.h"
 
 int main(int argc, char *argv[])
 {
 	// Initializations
-	static int *state = NULL;
+	static int *generation = NULL;
+	static int *generation_old = NULL;
 	static uint32_t frame_start, frame_time;
 	SDL_Event e;
 	SDL_Window *window = NULL;
 	SDL_Renderer *screen_renderer = NULL;
+	// Start Screen
+	size_t size = ((WIDTH+2) * (HEIGHT+2));
+	// Define and allocate size of virtual world
+	generation = (int*)malloc(size * sizeof(*generation));
+	generation_old = (int*)malloc(size * sizeof(*generation_old));
+	memset(generation,0,size*sizeof(*generation));
+	memset(generation_old,0,size*sizeof(*generation_old));
 	if(SDL_Init(SDL_INIT_VIDEO) < 0)
 	{
 		printf("SDL couldn't initialize! SDL_Error: %s \n", SDL_GetError());
@@ -32,54 +23,56 @@ int main(int argc, char *argv[])
 		return 0;
 	}
 	window = SDL_CreateWindow("Cellular Automata",
-														SDL_WINDOWPOS_UNDEFINED,
-														SDL_WINDOWPOS_UNDEFINED,
-														WIDTH,
-														HEIGHT,
-														SDL_WINDOW_SHOWN);
+			SDL_WINDOWPOS_UNDEFINED,
+			SDL_WINDOWPOS_UNDEFINED,
+			WIDTH,
+			HEIGHT,
+			SDL_WINDOW_SHOWN);
 	if(window == NULL)
 	{
 		printf("Window couldn't be created! SDL_Error: %s\n", SDL_GetError());
 		SDL_Quit();
 		return 0;
 	}
-	else
+	screen_renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_SOFTWARE);
+	if(screen_renderer == NULL)
 	{
-		screen_renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_SOFTWARE);
-		if(screen_renderer == NULL)
-		{
-			printf("Couldn't create renderer! SDL_Error: %s\n", SDL_GetError());
-			SDL_DestroyWindow(window);
-			SDL_Quit();
-			return 0;
-		}
+		printf("Couldn't create renderer! SDL_Error: %s\n", SDL_GetError());
+		SDL_DestroyWindow(window);
+		SDL_Quit();
+		return 0;
 	}
-	// Start Screen
-	size_t size = (WIDTH * HEIGHT);
-	// Define and allocate size of virtual world
-	state = (int*)malloc(size * sizeof(*state));
 	// Stop condition flag
 	int condition = 0;
 	// Create lifeforms!
-	create_glider(state, 10,10);
-	create_glider(state, 20,20);
-	create_glider(state, 30,30);
+	create_glider(generation, HEIGHT/2,WIDTH/2);
+	create_glider(generation, 1+HEIGHT/2,WIDTH/2);
+	create_glider(generation, 2+HEIGHT/2,WIDTH/2);
+	create_glider(generation, 3+HEIGHT/2,WIDTH/2);
+	create_glider(generation, 1+HEIGHT/2,WIDTH/2+1);
+	create_glider(generation, 1+HEIGHT/2,WIDTH/2+2);
+	create_glider(generation, 1+HEIGHT/2,WIDTH/2+3);
+	create_glider(generation, 14+HEIGHT/2,WIDTH/2);
+	create_glider(generation, 12+HEIGHT/2,WIDTH/2);
+	blinker(generation,300,200);
+	blinker(generation,200,100);
+	blinker(generation,405,300);
+	blinker(generation,2,20);
+	blinker(generation,2,21);
+	blinker(generation,2,22);
+	blinker(generation,2,24);
+	blinker(generation,2,1);
+	blinker(generation,2,26);
 	while(!condition)
 	{
 		// Start fps timer
 		frame_start = SDL_GetTicks();
-		// Handle key events
-		while(SDL_PollEvent(&e) != 0)
-		{
-			if(e.type == SDL_QUIT)
-			{
-				condition = 1;
-			}
-		}
+		//Handle events
+		condition = handle_events(&e,condition);
 		// Calculate changes on world
-		update_state(state);
+		update_generation(generation,generation_old);
 		// Update Screen
-		render_state(state, screen_renderer);
+		render_generation(generation, screen_renderer);
 		// Finish frame calc
 		frame_time = SDL_GetTicks() - frame_start;
 		if(FRAME_DELAY > frame_time)
@@ -87,113 +80,13 @@ int main(int argc, char *argv[])
 			SDL_Delay((int) (FRAME_DELAY - frame_time));
 		}
 	}
-	free(state);
+
+	free(generation);
+	free(generation_old);
 	SDL_DestroyRenderer(screen_renderer);
 	screen_renderer = NULL;
 	SDL_DestroyWindow(window);
 	window = NULL;
 	SDL_Quit();
 	return 0;
-}
-
-void update_state(int *state)
-{
-	int i;
-	int j;
-	int	live_neighbors = 0;
-	for(i = 0; i < HEIGHT; i++)
-	{
-		for(j = 0; j < WIDTH; j++)
-		{
-			live_neighbors = check_neighbors(state, i, j);
-			if(*(state + (i*HEIGHT)+j) && !(live_neighbors == 2 || live_neighbors == 3))
-			{
-				*(state + (i*HEIGHT)+j) = 0;
-			}
-			if(*(state + (i*HEIGHT)+j) && (live_neighbors == 3))
-			{
-				*(state + (i*HEIGHT)+j) = 1;
-			}
-		}
-	}
-}
-
-void render_state(int *state, SDL_Renderer *renderer)
-{
-	int i;
-	int j;
-	for(i = 0; i < HEIGHT; i++)
-	{
-		for(j = 0; j < WIDTH; j++)
-		{
-			if(*(state + (i*HEIGHT)+j) == 0)
-			{
-				SDL_SetRenderDrawColor(renderer, 0,0,0,255);
-				SDL_RenderDrawPoint(renderer, j, i);
-			}
-			else
-			{
-				SDL_SetRenderDrawColor(renderer, 255,255,255,255);
-				SDL_RenderDrawPoint(renderer, j, i);
-			}
-		}
-	}
-	SDL_RenderPresent(renderer);
-}
-
-int check_neighbors(int *state, int x, int y)
-{
-	// Current position -> *(state + (y*WIDTH)+x)
-	int count_alive = 0;
-	// Upper_left
-	if(*(state + ((y-1)*WIDTH)+(x-1)))
-	{
-		count_alive++;
-	}
-	// Upper_mid
-	if(*(state + ((y-1)*WIDTH)+(x)))
-	{
-		count_alive++;
-	}
-	// Upper_right
-	if(*(state + ((y-1)*WIDTH)+(x+1)))
-	{
-		count_alive++;
-	}
-	// Left
-	if(*(state + ((y)*WIDTH)+(x-1)))
-	{
-		count_alive++;
-	}
-	// Right
-	if(*(state + ((y)*WIDTH)+(x+1)))
-	{
-		count_alive++;
-	}
-	// Bottom_left
-	if(*(state + ((y+1)*WIDTH)+(x-1)))
-	{
-		count_alive++;
-	}
-	// Bottom
-	if(*(state + ((y+1)*WIDTH)+(x)))
-	{
-		count_alive++;
-	}
-	// Bottom_right
-	if(*(state + ((y+1)*WIDTH)+(x+1)))
-	{
-		count_alive++;
-	}
-	return count_alive;
-}
-
-void create_glider(int *state, int x, int y)
-{
-	*(state + ((y)*WIDTH)+(x+1)) = 1;
-	*(state + ((y+1)*WIDTH)+(x+2)) = 1;
-	*(state + ((y+2)*WIDTH)+(x+1)) = 1;
-	*(state + ((y+2)*WIDTH)+(x)) = 1;
-	*(state + ((y+2)*WIDTH)+(x+2)) = 1;
-	
 }
