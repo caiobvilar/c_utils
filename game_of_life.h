@@ -9,10 +9,10 @@
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_ttf.h>
 
-#define WIDTH 640
-#define HEIGHT 480
+#define WIDTH 300
+#define HEIGHT 300
 
-#define FPS 30
+#define FPS 15
 #define FRAME_DELAY 1000/FPS
 
 void update_generation(int *generation, int *old_generation);

@@ -1,7 +1,9 @@
 #include "game_of_life.h"
+#include <time.h>
 
 int main(int argc, char *argv[])
 {
+	srand(time(NULL));
 	// Initializations
 	static int *generation = NULL;
 	static int *generation_old = NULL;
@@ -34,7 +36,7 @@ int main(int argc, char *argv[])
 		SDL_Quit();
 		return 0;
 	}
-	screen_renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_SOFTWARE);
+	screen_renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 	if(screen_renderer == NULL)
 	{
 		printf("Couldn't create renderer! SDL_Error: %s\n", SDL_GetError());
@@ -45,7 +47,53 @@ int main(int argc, char *argv[])
 	// Stop condition flag
 	int condition = 0;
 	// Create lifeforms!
+	
 	create_glider(generation, HEIGHT/2,WIDTH/2);
+
+	create_glider(generation, 1+rand()%WIDTH,1+rand()%HEIGHT);
+	blinker(generation, 1+rand()%WIDTH,1+rand()%HEIGHT);
+	create_glider(generation, 1+rand()%WIDTH,1+rand()%HEIGHT);
+	create_glider(generation, 1+rand()%WIDTH,1+rand()%HEIGHT);
+	create_glider(generation, 1+rand()%WIDTH,1+rand()%HEIGHT);
+	blinker(generation, 1+rand()%WIDTH,1+rand()%HEIGHT);
+	create_glider(generation, 1+rand()%WIDTH,1+rand()%HEIGHT);
+	create_glider(generation, 1+rand()%WIDTH,1+rand()%HEIGHT);
+	create_glider(generation, 1+rand()%WIDTH,1+rand()%HEIGHT);
+	blinker(generation, 1+rand()%WIDTH,1+rand()%HEIGHT);
+	create_glider(generation, 1+rand()%WIDTH,1+rand()%HEIGHT);
+	create_glider(generation, 1+rand()%WIDTH,1+rand()%HEIGHT);
+	create_glider(generation, 1+rand()%WIDTH,1+rand()%HEIGHT);
+	blinker(generation, 1+rand()%WIDTH,1+rand()%HEIGHT);
+	create_glider(generation, 1+rand()%WIDTH,1+rand()%HEIGHT);
+	create_glider(generation, 1+rand()%WIDTH,1+rand()%HEIGHT);
+	create_glider(generation, 1+rand()%WIDTH,1+rand()%HEIGHT);
+	blinker(generation, 1+rand()%WIDTH,1+rand()%HEIGHT);
+	create_glider(generation, 1+rand()%WIDTH,1+rand()%HEIGHT);
+	create_glider(generation, 1+rand()%WIDTH,1+rand()%HEIGHT);
+	create_glider(generation, 1+rand()%WIDTH,1+rand()%HEIGHT);
+	create_glider(generation, 1+rand()%WIDTH,1+rand()%HEIGHT);
+	blinker(generation, 1+rand()%WIDTH,1+rand()%HEIGHT);
+	create_glider(generation, 1+rand()%WIDTH,1+rand()%HEIGHT);
+	create_glider(generation, 1+rand()%WIDTH,1+rand()%HEIGHT);
+	create_glider(generation, 1+rand()%WIDTH,1+rand()%HEIGHT);
+	blinker(generation, 1+rand()%WIDTH,1+rand()%HEIGHT);
+	create_glider(generation, 1+rand()%WIDTH,1+rand()%HEIGHT);
+	create_glider(generation, 1+rand()%WIDTH,1+rand()%HEIGHT);
+	blinker(generation, 1+rand()%WIDTH,1+rand()%HEIGHT);
+	blinker(generation, 1+rand()%WIDTH,1+rand()%HEIGHT);
+	blinker(generation, 1+rand()%WIDTH,1+rand()%HEIGHT);
+	blinker(generation, 1+rand()%WIDTH,1+rand()%HEIGHT);
+	blinker(generation, 1+rand()%WIDTH,1+rand()%HEIGHT);
+	blinker(generation, 1+rand()%WIDTH,1+rand()%HEIGHT);
+	blinker(generation, 1+rand()%WIDTH,1+rand()%HEIGHT);
+	blinker(generation, 1+rand()%WIDTH,1+rand()%HEIGHT);
+	blinker(generation, 1+rand()%WIDTH,1+rand()%HEIGHT);
+	blinker(generation, 1+rand()%WIDTH,1+rand()%HEIGHT);
+	blinker(generation, 1+rand()%WIDTH,1+rand()%HEIGHT);
+	blinker(generation, 1+rand()%WIDTH,1+rand()%HEIGHT);
+	blinker(generation, 1+rand()%WIDTH,1+rand()%HEIGHT);
+	blinker(generation, 1+rand()%WIDTH,1+rand()%HEIGHT);
+	blinker(generation, 1+rand()%WIDTH,1+rand()%HEIGHT);
 	create_glider(generation, 1+HEIGHT/2,WIDTH/2);
 	create_glider(generation, 2+HEIGHT/2,WIDTH/2);
 	create_glider(generation, 3+HEIGHT/2,WIDTH/2);
@@ -68,12 +116,6 @@ int main(int argc, char *argv[])
 	blinker(generation,300,200);
 	blinker(generation,200,100);
 	blinker(generation,405,300);
-	blinker(generation,2,20);
-	blinker(generation,2,21);
-	blinker(generation,2,22);
-	blinker(generation,2,24);
-	blinker(generation,2,1);
-	blinker(generation,2,26);
 	while(!condition)
 	{
 		// Start fps timer
