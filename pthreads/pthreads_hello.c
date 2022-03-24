@@ -1,7 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <pthread.h>
-
+#include <string.h>
+#include <errno.h>
 // Global variable: acessible to all threads
 int thread_count = 0;
 
@@ -18,13 +19,20 @@ int main(int argc, char *argv[])
 
 	for(thread = 0; thread < thread_count; thread++)
 	{
-		pthread_create(&thread_handles[thread], NULL, hello, (void*) thread);
+		if(pthread_create(&thread_handles[thread], NULL, hello, (void*) thread) != 0)
+		{
+			perror("Failed to create thread\n");
+		}
+
 	}
 	printf("Hello from the main thread\n");
 
 	for(thread = 0; thread < thread_count; thread++)
 	{
-		pthread_join(thread_handles[thread], NULL);
+		if(pthread_join(thread_handles[thread], NULL) != 0)
+		{
+			printf("Failed to join thread %d: %s\n",thread_count,strerror(errno));
+		}
 	}
 
 	free(thread_handles);
