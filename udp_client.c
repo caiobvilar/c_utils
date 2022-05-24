@@ -21,6 +21,7 @@ int main(int argc, char * argv[])
 	struct addrinfo hints, *servinfo, *p;
 	int rv;
 	int numbytes;
+	int broadcast_enable=1;
 
 	if(argc != 3)
 	{
@@ -28,7 +29,7 @@ int main(int argc, char * argv[])
 		return 1;
 	}
 	memset(&hints, 0, sizeof hints);
-	hints.ai_family = AF_INET6;
+	hints.ai_family = AF_INET;
 	hints.ai_socktype = SOCK_DGRAM;
 
 	if((rv = getaddrinfo(argv[1], SERVERPORT, &hints, &servinfo)) != 0)
@@ -53,7 +54,11 @@ int main(int argc, char * argv[])
 		fprintf(stderr, "talker: failed to create socket\n");
 		return 2;
 	}
-
+	if(setsockopt(sockfd, SOL_SOCKET,SO_BROADCAST, &broadcast_enable, sizeof(broadcast_enable)))
+	{
+		perror("cant set socket to broadcast");
+		return -1;
+	}
 	if((numbytes = sendto(sockfd, argv[2], strlen(argv[2]), 0, p->ai_addr, p->ai_addrlen)) == -1)
 	{
 		perror("talker: sendto");
